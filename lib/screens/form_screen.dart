@@ -54,7 +54,7 @@ class _FormScreenState extends ConsumerState<FormScreen> {
               icon: const Icon(Icons.edit),
               onPressed: () {
                 ref.read(modoProvider.notifier).state = ModoFormulario.editar;
-                setState(() {}); // refresca el modo
+                setState(() {}); 
               },
             )
         ],

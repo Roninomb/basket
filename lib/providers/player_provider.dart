@@ -8,9 +8,10 @@ final playerListProvider = StateNotifierProvider<PlayerListNotifier, List<Player
 class PlayerListNotifier extends StateNotifier<List<Player>> {
   PlayerListNotifier()
       : super([
-          Player(name: 'LeBron James', team: 'Lakers', position: 'Alero', photoUrl: 'https://i.imgur.com/kTPWzxq.jpg'),
-          Player(name: 'Stephen Curry', team: 'Warriors', position: 'Base', photoUrl: 'https://i.imgur.com/SyPSHUg.jpg'),
-        ]);
+          Player(name: 'Lebron James', team: 'Lakers', position: 'Alero', photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzvG-yBH-73rXt9aWWQJN1G161fo5b1W-8ng&s'),
+          Player(name: 'Stephen Curry', team: 'Warriors', position: 'Base', photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg8RTJce8ySVsLYTlqBVyPEJPovPL5yGk3ow&s',
+        ),
+         Player(name: 'Shai Gilgeous-Alexander', team: 'Oklahoma', position: 'Base', photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvftlZiWxWowM1c_trzJCMkXj4u11WUJ_Rnw&s'),]);
 
   void add(Player player) => state = [...state, player];
 
