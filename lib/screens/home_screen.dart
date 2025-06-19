@@ -1,56 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+// ignore: unused_import
 import '../entities/player.dart';
-import '../entities/user.dart';
+import '../providers/user_provider.dart';
+import '../providers/player_provider.dart';
+import '../providers/mode_provider.dart';
 
-class HomeScreen extends StatelessWidget {
-  final Usuario user;
-
-  const HomeScreen({super.key, required this.user});
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Player> players = [
-      Player(
-        name: 'LeBron James',
-        team: 'Los Angeles Lakers',
-        position: 'Alero',
-        photoUrl: 'https://i.imgur.com/kTPWzxq.jpg',
-      ),
-      Player(
-        name: 'Stephen Curry',
-        team: 'Golden State Warriors',
-        position: 'Base',
-        photoUrl: 'https://i.imgur.com/SyPSHUg.jpg',
-      ),
-      Player(
-        name: 'Luka Dončić',
-        team: 'Dallas Mavericks',
-        position: 'Escolta',
-        photoUrl: 'https://i.imgur.com/gH9HKv0.jpg',
-      ),
-      Player(
-        name: 'Giannis Antetokounmpo',
-        team: 'Milwaukee Bucks',
-        position: 'Ala-pívot',
-        photoUrl: 'https://i.imgur.com/n6TjXnK.jpg',
-      ),
-      Player(
-        name: 'Nikola Jokić',
-        team: 'Denver Nuggets',
-        position: 'Pívot',
-        photoUrl: 'https://i.imgur.com/4z1b14e.jpg',
-      ),
-      Player(
-        name: 'Jayson Tatum',
-        team: 'Boston Celtics',
-        position: 'Alero',
-        photoUrl: 'https://i.imgur.com/TpFCZnI.jpg',
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final players = ref.watch(playerListProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hola ${user.nombre}'),
+        title: Text('Hola ${user?.nombre ?? 'Usuario'}'),
       ),
       body: ListView.builder(
         itemCount: players.length,
@@ -68,9 +36,23 @@ class HomeScreen extends StatelessWidget {
               ),
               title: Text(player.name),
               subtitle: Text('${player.team} - ${player.position}'),
+              onTap: () {
+                ref.read(modoProvider.notifier).state = ModoFormulario.ver;
+                context.push('/form', extra: {
+                  'player': player,
+                  'index': index,
+                });
+              },
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          ref.read(modoProvider.notifier).state = ModoFormulario.agregar;
+          context.push('/form');
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

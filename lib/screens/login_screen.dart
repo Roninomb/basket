@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../entities/user.dart';
+import '../providers/user_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController inputEmail = TextEditingController();
   final TextEditingController inputPassword = TextEditingController();
 
   final List<Usuario> users = [
-    Usuario(email: 'roninomb@gmail.com', password: 'roni', nombre: 'Roni',),
-    Usuario(email: 'esteban@gmail.com', password: '1234', nombre: 'esteban', ),
-    Usuario(email: 'julian@gmail.com', password: 'abcd', nombre: 'Lola', ),
-    Usuario(email: 'juan@gmail.com', password: 'pass123', nombre: 'Juan', ),
-    Usuario(email: 'pablo@gmail.com', password: 'basket', nombre: 'Pablo', ),
+    Usuario(email: 'roninomb@gmail.com', password: 'roni', nombre: 'Roni'),
+    Usuario(email: 'esteban@gmail.com', password: '1234', nombre: 'esteban'),
+    Usuario(email: 'julian@gmail.com', password: 'abcd', nombre: 'Lola'),
+    Usuario(email: 'juan@gmail.com', password: 'pass123', nombre: 'Juan'),
+    Usuario(email: 'pablo@gmail.com', password: 'basket', nombre: 'Pablo'),
   ];
 
   void confirmarLogin() {
     for (var user in users) {
       if (inputEmail.text == user.email && inputPassword.text == user.password) {
-        context.push('/home', extra: user);
+        ref.read(currentUserProvider.notifier).state = user;
+        context.push('/list');
         return;
       }
     }
