@@ -96,7 +96,7 @@ class _FormScreenState extends ConsumerState<FormScreen> {
 
                   if (modo == ModoFormulario.agregar) {
                     ref.read(playerListProvider.notifier).add(newPlayer);
-                  } else if (modo == ModoFormulario.editar && index != null) {
+                  } else if (modo == ModoFormulario.editar) {
                     ref.read(playerListProvider.notifier).update(index!, newPlayer);
                   }
 
