@@ -52,7 +52,7 @@ class HomeScreen extends ConsumerWidget {
           ref.read(modoProvider.notifier).state = ModoFormulario.agregar;
           context.push('/form');
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, size: 50,),
       ),
     );
   }

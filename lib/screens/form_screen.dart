@@ -55,8 +55,7 @@ class _FormScreenState extends ConsumerState<FormScreen> {
               onPressed: () {
                 ref.read(modoProvider.notifier).state = ModoFormulario.editar;
                 setState(() {}); 
-              },
-            )
+              },)
         ],
       ),
       body: Padding(
@@ -98,7 +97,10 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                     ref.read(playerListProvider.notifier).add(newPlayer);
                   } else if (modo == ModoFormulario.editar) {
                     ref.read(playerListProvider.notifier).update(index!, newPlayer);
+                  } else if (modo == ModoFormulario.sacar) {
+                    ref.read(playerListProvider.notifier).remove(index!, newPlayer);
                   }
+                  
 
                   context.pop();
                 },

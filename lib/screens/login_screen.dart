@@ -17,10 +17,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   final List<Usuario> users = [
     Usuario(email: 'roninomb@gmail.com', password: 'roni', nombre: 'Roni'),
-    Usuario(email: 'esteban@gmail.com', password: '1234', nombre: 'esteban'),
-    Usuario(email: 'julian@gmail.com', password: 'abcd', nombre: 'Lola'),
-    Usuario(email: 'juan@gmail.com', password: 'pass123', nombre: 'Juan'),
-    Usuario(email: 'pablo@gmail.com', password: 'basket', nombre: 'Pablo'),
+    Usuario(email: 'esteban@gmail.com', password: 'aaaa', nombre: 'esteban'),
+    Usuario(email: 'julian@gmail.com', password: 'aaaa', nombre: 'Lola'),
+    Usuario(email: 'juan@gmail.com', password: 'aaaa', nombre: 'Juan'),
+    Usuario(email: 'pablo@gmail.com', password: 'aaaa', nombre: 'Pablo'),
   ];
 
   void confirmarLogin() {

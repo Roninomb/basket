@@ -20,4 +20,9 @@ class PlayerListNotifier extends StateNotifier<List<Player>> {
     newList[index] = updatedPlayer;
     state = newList;
   }
+  void remove(int index, Player removedPlayer) {
+    final newList = [...state];
+    newList.removeAt(index);
+    state = newList;
+  }
 }
