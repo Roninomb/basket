@@ -36,8 +36,8 @@ class _FormScreenState extends ConsumerState<FormScreen> {
   @override
   Widget build(BuildContext context) {
     final modo = ref.watch(modoProvider);
-
-    final isEditable = modo == ModoFormulario.agregar || modo == ModoFormulario.editar;
+    final isEditable =
+        modo == ModoFormulario.agregar || modo == ModoFormulario.editar;
 
     return Scaffold(
       appBar: AppBar(
@@ -49,13 +49,24 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                   : 'Editar jugador',
         ),
         actions: [
-          if (modo == ModoFormulario.ver)
+          if (modo == ModoFormulario.ver) ...[
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () {
                 ref.read(modoProvider.notifier).state = ModoFormulario.editar;
-                setState(() {}); 
-              },)
+                setState(() {});
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                if (index != null) {
+                  ref.read(playerListProvider.notifier).remove(index!);
+                  context.pop();
+                }
+              },
+            ),
+          ],
         ],
       ),
       body: Padding(
@@ -97,10 +108,7 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                     ref.read(playerListProvider.notifier).add(newPlayer);
                   } else if (modo == ModoFormulario.editar) {
                     ref.read(playerListProvider.notifier).update(index!, newPlayer);
-                  } else if (modo == ModoFormulario.sacar) {
-                    ref.read(playerListProvider.notifier).remove(index!, newPlayer);
                   }
-                  
 
                   context.pop();
                 },
