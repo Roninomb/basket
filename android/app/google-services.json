@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "609663778480",
+    "project_id": "dapp-d49d4",
+    "storage_bucket": "dapp-d49d4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609663778480:android:d87757ea80a50f62f10575",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG_oCFIxkeEtpC_pvsbupb82pqQBzrgiE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

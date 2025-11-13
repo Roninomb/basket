@@ -6,9 +6,7 @@ import '../entities/player.dart';
 import 'package:go_router/go_router.dart';
 
 class FormScreen extends ConsumerStatefulWidget {
-  final Map<String, dynamic>? extra;
-
-  const FormScreen({super.key, this.extra});
+  const FormScreen({super.key});
 
   @override
   ConsumerState<FormScreen> createState() => _FormScreenState();
@@ -20,13 +18,10 @@ class _FormScreenState extends ConsumerState<FormScreen> {
   late final TextEditingController positionController;
   late final TextEditingController photoUrlController;
 
-  int? index;
-
   @override
   void initState() {
     super.initState();
-    final player = widget.extra?['player'] as Player?;
-    index = widget.extra?['index'] as int?;
+    final player = ref.read(selectedPlayerProvider);
     nameController = TextEditingController(text: player?.name);
     teamController = TextEditingController(text: player?.team);
     positionController = TextEditingController(text: player?.position);
@@ -36,6 +31,7 @@ class _FormScreenState extends ConsumerState<FormScreen> {
   @override
   Widget build(BuildContext context) {
     final modo = ref.watch(modoProvider);
+    final player = ref.watch(selectedPlayerProvider);
     final isEditable =
         modo == ModoFormulario.agregar || modo == ModoFormulario.editar;
 
@@ -54,14 +50,13 @@ class _FormScreenState extends ConsumerState<FormScreen> {
               icon: const Icon(Icons.edit),
               onPressed: () {
                 ref.read(modoProvider.notifier).state = ModoFormulario.editar;
-                setState(() {});
               },
             ),
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                if (index != null) {
-                  ref.read(playerListProvider.notifier).remove(index!);
+                if (player != null) {
+                  ref.read(playerListProvider.notifier).remove(player);
                   context.pop();
                 }
               },
@@ -97,19 +92,25 @@ class _FormScreenState extends ConsumerState<FormScreen> {
             if (isEditable)
               ElevatedButton(
                 onPressed: () {
-                  final newPlayer = Player(
-                    name: nameController.text,
-                    team: teamController.text,
-                    position: positionController.text,
-                    photoUrl: photoUrlController.text,
-                  );
-
                   if (modo == ModoFormulario.agregar) {
+                    final newPlayer = Player(
+                      name: nameController.text,
+                      team: teamController.text,
+                      position: positionController.text,
+                      photoUrl: photoUrlController.text,
+                    );
                     ref.read(playerListProvider.notifier).add(newPlayer);
                   } else if (modo == ModoFormulario.editar) {
-                    ref.read(playerListProvider.notifier).update(index!, newPlayer);
+                    if (player != null) {
+                       final updatedPlayer = player.copyWith(
+                        name: nameController.text,
+                        team: teamController.text,
+                        position: positionController.text,
+                        photoUrl: photoUrlController.text,
+                      );
+                      ref.read(playerListProvider.notifier).update(updatedPlayer);
+                    }
                   }
-
                   context.pop();
                 },
                 child: const Text('Guardar'),

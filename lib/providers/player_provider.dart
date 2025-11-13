@@ -1,28 +1,43 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myapp/services/player_service.dart';
 import '../entities/player.dart';
 
+// Provider for the selected player
+final selectedPlayerProvider = StateProvider<Player?>((ref) => null);
+
+final playerServiceProvider = Provider((ref) => PlayerService());
+
 final playerListProvider = StateNotifierProvider<PlayerListNotifier, List<Player>>((ref) {
-  return PlayerListNotifier();
+  final playerService = ref.watch(playerServiceProvider);
+  return PlayerListNotifier(playerService);
 });
 
 class PlayerListNotifier extends StateNotifier<List<Player>> {
-  PlayerListNotifier()
-      : super([
-          Player(name: 'Lebron James', team: 'Lakers', position: 'Alero', photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzvG-yBH-73rXt9aWWQJN1G161fo5b1W-8ng&s'),
-          Player(name: 'Stephen Curry', team: 'Warriors', position: 'Base', photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg8RTJce8ySVsLYTlqBVyPEJPovPL5yGk3ow&s',
-        ),
-         Player(name: 'Shai Gilgeous-Alexander', team: 'Oklahoma', position: 'Base', photoUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvftlZiWxWowM1c_trzJCMkXj4u11WUJ_Rnw&s'),]);
+  final PlayerService _playerService;
 
-  void add(Player player) => state = [...state, player];
-
-  void update(int index, Player updatedPlayer) {
-    final newList = [...state];
-    newList[index] = updatedPlayer;
-    state = newList;
+  PlayerListNotifier(this._playerService) : super([]) {
+    _fetchPlayers();
   }
-  void remove(int index) {
-  final newList = [...state];
-  newList.removeAt(index);
-  state = newList;
-}
+
+  Future<void> _fetchPlayers() async {
+    state = await _playerService.getPlayers();
+  }
+
+  Future<void> add(Player player) async {
+    final newPlayer = await _playerService.addPlayer(player);
+    state = [...state, player.copyWith(id: newPlayer.id)];
+  }
+
+  Future<void> update(Player updatedPlayer) async {
+    await _playerService.updatePlayer(updatedPlayer);
+    state = [
+      for (final player in state)
+        if (player.id == updatedPlayer.id) updatedPlayer else player,
+    ];
+  }
+
+  Future<void> remove(Player player) async {
+    await _playerService.removePlayer(player);
+    state = state.where((p) => p.id != player.id).toList();
+  }
 }

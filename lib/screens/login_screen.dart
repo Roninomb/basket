@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../entities/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../providers/user_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -15,29 +16,61 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController inputEmail = TextEditingController();
   final TextEditingController inputPassword = TextEditingController();
 
-  final List<Usuario> users = [
-    Usuario(email: 'roninomb@gmail.com', password: 'roni', nombre: 'Roni'),
-    Usuario(email: 'esteban@gmail.com', password: 'aaaa', nombre: 'esteban'),
-    Usuario(email: 'julian@gmail.com', password: 'aaaa', nombre: 'Lola'),
-    Usuario(email: 'juan@gmail.com', password: 'aaaa', nombre: 'Juan'),
-    Usuario(email: 'pablo@gmail.com', password: 'aaaa', nombre: 'Pablo'),
-  ];
+  bool _isLoading = false;
 
-  void confirmarLogin() {
-    for (var user in users) {
-      if (inputEmail.text == user.email && inputPassword.text == user.password) {
-        ref.read(currentUserProvider.notifier).state = user;
-        context.push('/list');
-        return;
-      }
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Usuario y/o contraseña incorrectos.')),
-    );
+  @override
+  void dispose() {
+    inputEmail.dispose();
+    inputPassword.dispose();
+    super.dispose();
   }
-//.
+
+  Future<void> confirmarLogin() async {
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: inputEmail.text.trim(),
+        password: inputPassword.text.trim(),
+      );
+
+      if (!mounted) return;
+      context.go('/list');
+    } on FirebaseAuthException catch (e) {
+      String mensaje = 'Error al iniciar sesión.';
+
+      if (e.code == 'user-not-found') {
+        mensaje = 'No existe un usuario con ese email.';
+      } else if (e.code == 'wrong-password') {
+        mensaje = 'Contraseña incorrecta.';
+      } else if (e.code == 'invalid-email') {
+        mensaje = 'Email inválido.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(mensaje)),
+      );
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error desconocido al iniciar sesión.')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Si ya hay usuario logueado, mandarlo directo a /list
+    final currentUser = ref.watch(currentUserProvider);
+    if (currentUser != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.go('/list');
+        }
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text("Login")),
       body: Padding(
@@ -47,6 +80,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             TextField(
               controller: inputEmail,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 hintText: 'Email',
                 border: OutlineInputBorder(),
@@ -63,8 +97,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: confirmarLogin,
-              child: const Text('INGRESAR'),
+              onPressed: _isLoading ? null : confirmarLogin,
+              child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('INGRESAR'),
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () => context.push('/register'),
+              child: const Text('¿No tenés cuenta? Registrate'),
             ),
           ],
         ),
